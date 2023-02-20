@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { TagsService } from './tags.service';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
 import { PaginationDto } from '../common/dto/pagination.dto';
+import { ValidRoles } from '../auth/interfaces/active-roles.interface';
+import { Auth } from 'src/auth/decorators/auth.decorator';
 
 @Controller('tags')
 export class TagsController {
@@ -13,6 +15,7 @@ export class TagsController {
     return this.tagsService.create(createTagDto);
   }
 
+  @Auth(ValidRoles.user)
   @Get()
   findAll(@Query() paginationDto: PaginationDto) {
     return this.tagsService.findAll(paginationDto);
@@ -31,13 +34,5 @@ export class TagsController {
   @Patch('changeStatus/:id')
   changeStatus(@Param('id', ParseUUIDPipe) id: string) {
     return this.tagsService.changeStatus(id);
-  }
-
-  @Get('seeding')
-  seedingTagData(){
-    return {
-      'hola': 'mundo'
-    }
-    // return this.tagsService.insertMultipleData();
   }
 }

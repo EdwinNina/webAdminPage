@@ -8,6 +8,8 @@ import { PostsModule } from './posts/posts.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SeedsModule } from './seeds/seeds.module';
 import { ImagesModule } from './images/images.module';
+import { RolesModule } from './roles/roles.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -27,6 +29,8 @@ import { ImagesModule } from './images/images.module';
     PostsModule,
     ImagesModule,
     SeedsModule,
+    RolesModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

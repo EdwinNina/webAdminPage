@@ -4,11 +4,17 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PaginationDto } from '../common/dto/pagination.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { GetUser } from '../auth/decorators/get-user.decorator';
+import { User } from 'src/auth/entities/user.entity';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { ValidRoles } from '../auth/interfaces/active-roles.interface';
+import { LikePostDto } from './dto/like-post.dto';
 
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
+  @Auth(ValidRoles.admin, ValidRoles.blogger)
   @Post()
   @UseInterceptors(FileInterceptor('image'))
   create(
@@ -20,9 +26,10 @@ export class PostsController {
           new FileTypeValidator({ fileType: 'jpg|jpeg|png' }),
         ]
       })
-    ) image: Express.Multer.File
+    ) image: Express.Multer.File,
+    @GetUser() user: User
   ) {
-    return this.postsService.create(createPostDto, image);
+    return this.postsService.create(createPostDto, image, user);
   }
 
   @Get()
@@ -51,6 +58,15 @@ export class PostsController {
   )
   {
     return this.postsService.update(id, updatePostDto, image);
+  }
+
+  @Auth(ValidRoles.user)
+  @Post('likePost')
+  likePost(
+    @Body() likePostDto: LikePostDto,
+    @GetUser() user: User
+  ){
+    return this.postsService.likePostByUser(likePostDto.post_id, user)
   }
 
   // @Delete(':id')

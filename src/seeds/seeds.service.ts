@@ -6,6 +6,8 @@ import { Repository } from 'typeorm';
 import { Tag } from 'src/tags/entities/tag.entity';
 import { categorias } from 'prisma/data/categorias';
 import { Category } from 'src/categories/entities/category.entity';
+import { Role } from 'src/roles/entities/role.entity';
+import { roles } from 'prisma/data/roles';
 
 
 @Injectable()
@@ -16,6 +18,8 @@ export class SeedsService {
       private tagRepository: Repository<Tag>,
       @InjectRepository(Category)
       private categoryRepository: Repository<Category>,
+      @InjectRepository(Role)
+      private roleRepository: Repository<Role>,
    ) {}
 
    async insertDataDB(){
@@ -63,4 +67,31 @@ export class SeedsService {
          'mensaje': 'Datos insertados correctamente'
       }
    }
+
+   async insertRolesDB(){
+      const rolesDB = await this.roleRepository.find();
+
+      if(rolesDB.length){
+         const roleIds = rolesDB.map( role => role.id )
+   
+         await this.roleRepository.createQueryBuilder()
+            .delete()
+            .from(Role)
+            .where('id IN (:...id)', { id: roleIds })
+            .execute();
+      }
+      roles.map(async role => {
+         const { name, description } = role
+         const nuevoRole = this.roleRepository.create({
+            name,
+            description
+         })
+         await this.roleRepository.save(nuevoRole)
+      })
+
+      return {
+         'mensaje': 'Datos insertados correctamente'
+      }
+   }
 }
+

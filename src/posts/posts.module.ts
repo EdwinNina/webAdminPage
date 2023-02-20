@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Post } from './entities/post.entity';
 import { ImagesModule } from 'src/images/images.module';
 import { TagsModule } from 'src/tags/tags.module';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   controllers: [PostsController],
@@ -12,7 +13,8 @@ import { TagsModule } from 'src/tags/tags.module';
   imports: [
     TypeOrmModule.forFeature([Post]),
     ImagesModule,
-    TagsModule
+    TagsModule,
+    AuthModule
   ],
 })
 export class PostsModule {}

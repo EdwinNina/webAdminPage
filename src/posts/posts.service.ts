@@ -10,6 +10,7 @@ import { ImagesService } from 'src/images/images.service';
 import { Tag } from 'src/tags/entities/tag.entity';
 import { TagsService } from 'src/tags/tags.service';
 import { isUUID } from 'class-validator';
+import { User } from 'src/auth/entities/user.entity';
 
 @Injectable()
 export class PostsService {
@@ -24,7 +25,7 @@ export class PostsService {
     private tagsRepository: Repository<Tag>,
   ){}
 
-  async create(createPostDto: CreatePostDto, image: Express.Multer.File) {
+  async create(createPostDto: CreatePostDto, image: Express.Multer.File, user: User) {
     try {
       const [resultImage, tagsIds] = await Promise.all([
         this.imageService.uploadImage(image, this.cloudinary_folder),
@@ -33,6 +34,7 @@ export class PostsService {
       const post = await this.postRepository.create(createPostDto)
       post.image = resultImage.secure_url
       post.tags = tagsIds
+      post.user = user;
 
       return await this.postRepository.save(post)
     } catch (error) {
@@ -118,4 +120,20 @@ export class PostsService {
   //     handleErrorDbLog(error)
   //   }
   // }
+
+  async likePostByUser(post_id: string, user: User){
+    try {
+      const post = await this.findOne(post_id)
+      post.likePosts = [user]
+
+      await this.postRepository.save(post)
+
+      return {
+        ok: true,
+        message: 'Le diste me gusta a este post ' + post.title
+      }
+    } catch (error) {
+      handleErrorDbLog(error)
+    }
+  }
 }

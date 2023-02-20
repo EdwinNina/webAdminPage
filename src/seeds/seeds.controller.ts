@@ -9,4 +9,9 @@ export class SeedsController {
   insertDataDB(){
     return this.seedsService.insertDataDB();
   }
+
+  @Get('roles')
+  insertRoleSeed(){
+    return this.seedsService.insertRolesDB();
+  }
 }
