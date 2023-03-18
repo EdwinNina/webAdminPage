@@ -60,13 +60,22 @@ export class PostsController {
     return this.postsService.update(id, updatePostDto, image);
   }
 
-  @Auth(ValidRoles.user)
-  @Post('likePost')
+  @Auth(ValidRoles.admin, ValidRoles.user)
+  @Post('like')
   likePost(
     @Body() likePostDto: LikePostDto,
     @GetUser() user: User
   ){
     return this.postsService.likePostByUser(likePostDto.post_id, user)
+  }
+
+  @Auth(ValidRoles.admin, ValidRoles.user)
+  @Post('dislike')
+  dislikePost(
+    @Body() likePostDto: LikePostDto,
+    @GetUser() user: User
+  ){
+    return this.postsService.removelikePostByUser(likePostDto.post_id, user)
   }
 
   // @Delete(':id')

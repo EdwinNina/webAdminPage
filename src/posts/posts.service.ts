@@ -23,6 +23,8 @@ export class PostsService {
     private imageService: ImagesService,
     @InjectRepository(Tag)
     private tagsRepository: Repository<Tag>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ){}
 
   async create(createPostDto: CreatePostDto, image: Express.Multer.File, user: User) {
@@ -122,18 +124,44 @@ export class PostsService {
   // }
 
   async likePostByUser(post_id: string, user: User){
-    try {
-      const post = await this.findOne(post_id)
-      post.likePosts = [user]
+    const userInfo = await this.getLikePostByUser(user.id)
 
+    if(userInfo.favoritePosts.some(post => post.id === post_id)){
+      return {
+        message: 'Ya le diste me gusta a este post',
+      }
+    }
+    try {
+      const post = await this.findOne(post_id);
+      post.likePosts = [user];
       await this.postRepository.save(post)
 
       return {
-        ok: true,
-        message: 'Le diste me gusta a este post ' + post.title
+        message: 'Le diste me gusta a este post ' + post.title,
       }
     } catch (error) {
       handleErrorDbLog(error)
     }
+  }
+
+  async removelikePostByUser(post_id: string, user: User){
+    const userInfo = await this.getLikePostByUser(user.id)
+    try {
+      const posts = userInfo.favoritePosts.filter(post => post.id !== post_id)
+      user.favoritePosts = posts
+      this.userRepository.save(user);
+      return {
+        message: 'Ya no te gusta este post',
+      }
+    } catch (error) {
+      handleErrorDbLog(error)
+    }
+  }
+
+  async getLikePostByUser(id: string){
+    return await this.userRepository.createQueryBuilder("user")
+    .where({ id })
+    .leftJoinAndSelect("user.favoritePosts", "posts")
+    .getOne()
   }
 }

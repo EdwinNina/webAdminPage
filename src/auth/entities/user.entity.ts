@@ -1,12 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn, BeforeInsert, BeforeUpdate, OneToMany, JoinTable, ManyToMany, CreateDateColumn } from 'typeorm';
+import { Column, Entity, BeforeInsert, BeforeUpdate, OneToMany, JoinTable, ManyToMany, CreateDateColumn } from 'typeorm';
 import { Role } from '../../roles/entities/role.entity';
 import { Post } from 'src/posts/entities/post.entity';
+import { BaseEntity } from 'src/shared/base.entity';
 
 @Entity('users')
-export class User{
-
-   @PrimaryGeneratedColumn('uuid')
-   id: string;
+export class User extends BaseEntity{
 
    @Column('varchar', { length: 100 })
    username: string;
@@ -48,12 +46,6 @@ export class User{
       ( post ) => post.likePosts,
    )
    favoritePosts: Post[];
-
-   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
-   created_at: Date;
-
-   @CreateDateColumn({ name: 'updated_at' })
-   updatedAt: Date;
 
    @BeforeInsert()
    checkInputsInsert(){

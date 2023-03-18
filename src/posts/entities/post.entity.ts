@@ -1,13 +1,11 @@
 import { User } from "src/auth/entities/user.entity";
 import { Category } from "src/categories/entities/category.entity";
+import { BaseEntity } from "src/shared/base.entity";
 import { Tag } from "src/tags/entities/tag.entity";
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, ManyToOne, BeforeInsert, BeforeUpdate, ManyToMany, JoinTable, JoinColumn } from "typeorm";
+import { Column, Entity, ManyToOne, BeforeInsert, BeforeUpdate, ManyToMany, JoinTable, JoinColumn } from "typeorm";
 
 @Entity('posts')
-export class Post {
-
-   @PrimaryGeneratedColumn('uuid')
-   id: string;
+export class Post extends BaseEntity{
 
    @Column('varchar', { length: 200, unique: true })
    title: string;
@@ -27,9 +25,6 @@ export class Post {
    @Column('boolean', { default: true })
    status: boolean;
 
-   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
-   created_at: Date;
-
    @ManyToOne(
       () => Category,
       (category) => category.posts,
@@ -40,7 +35,6 @@ export class Post {
    @ManyToOne(
       () => User,
       (user) => user.post,
-      { eager: true }
    )
    @JoinColumn({
       name: 'user_id'
@@ -59,7 +53,6 @@ export class Post {
    @ManyToMany(
       () => Tag,
       (tag) => tag.posts,
-      { eager: true }
    )
    tags: Tag[]
 

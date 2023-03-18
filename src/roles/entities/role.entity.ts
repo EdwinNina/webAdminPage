@@ -1,12 +1,9 @@
 import { User } from "src/auth/entities/user.entity";
+import { BaseEntity } from "src/shared/base.entity";
 import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('roles')
-export class Role {
-
-   @PrimaryGeneratedColumn('uuid')
-   id: string;
-
+export class Role extends BaseEntity{
    @Column('varchar', { length: 50, nullable: false, unique: true})
    name: string;
 

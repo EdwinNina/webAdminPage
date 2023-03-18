@@ -1,11 +1,9 @@
 import { Post } from "src/posts/entities/post.entity";
-import { Column, Entity, PrimaryGeneratedColumn, BeforeInsert, BeforeUpdate, ManyToMany } from "typeorm";
+import { BaseEntity } from "src/shared/base.entity";
+import { Column, Entity, BeforeInsert, BeforeUpdate, ManyToMany } from "typeorm";
 
 @Entity('tags')
-export class Tag {
-   @PrimaryGeneratedColumn('uuid')
-   id: string;
-
+export class Tag extends BaseEntity{
    @Column('varchar', { length: 100, unique: true })
    title: string;
 
